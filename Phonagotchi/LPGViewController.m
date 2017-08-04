@@ -12,6 +12,9 @@
 
 
 @property (nonatomic) UIImageView *petImageView;
+@property (nonatomic , strong) UIImageView *appleView;
+@property (nonatomic , strong) UIImageView *basketView;
+@property (nonatomic ) BOOL basketClick;
 
 
 @end
@@ -22,7 +25,7 @@
 {
     [super viewDidLoad];
 
-   // Phonagotchi *cat = [[Phonagotchi alloc]init];
+  // Phonagotchi *cat = [[Phonagotchi alloc]init];
     
     
     
@@ -62,26 +65,108 @@
     
 //New view of basket and apple
     
-
-
+    self.appleView = [[UIImageView alloc]initWithFrame: CGRectZero];
+    self.appleView.image = [UIImage imageNamed:@"apple.png"];
+    self.appleView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    UIImageView *basket = [[UIImageView alloc] initWithFrame:CGRectMake(220, 470, 80, 80)];
+    self.basketView = [[UIImageView alloc]initWithFrame:CGRectZero];
+    self.basketView.image = [UIImage imageNamed:@"bucket.png"];
+    self.basketView.translatesAutoresizingMaskIntoConstraints= NO;
+    
+    [self.view addSubview: self.basketView];
+    [self.view addSubview: self.appleView];
+    
+    
+    
+//Autolayout Constraints for apple
+    
+    [NSLayoutConstraint constraintWithItem:self.appleView
+                                 attribute:NSLayoutAttributeWidth
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeWidth
+                                multiplier:0.15
+                                  constant:0.0].active = YES;
+    
+    
+    [NSLayoutConstraint constraintWithItem:self.appleView
+                                 attribute:NSLayoutAttributeHeight
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeHeight
+                                multiplier:0.15
+                                  constant:0.0].active = YES;
+    
+    [NSLayoutConstraint constraintWithItem:self.appleView
+                                 attribute:NSLayoutAttributeRight
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeRight
+                                multiplier:1
+                                  constant:-30].active = YES;
+    
+    [NSLayoutConstraint constraintWithItem:self.appleView
+                                 attribute:NSLayoutAttributeBottom
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeBottom
+                                multiplier:1
+                                  constant:-45].active = YES;
+    
+    
+    
+    
+    
+    [NSLayoutConstraint constraintWithItem:self.basketView
+                                 attribute:NSLayoutAttributeWidth
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeWidth
+                                multiplier:0.25
+                                  constant:0.0].active = YES;
+    
+    [NSLayoutConstraint constraintWithItem:self.basketView
+                                 attribute:NSLayoutAttributeHeight
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeHeight
+                                multiplier:0.20
+                                  constant:0.0].active = YES;
+    
+    [NSLayoutConstraint constraintWithItem:self.basketView
+                                 attribute:NSLayoutAttributeRight
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeRight
+                                multiplier:1
+                                  constant:-15].active = YES;
+    [NSLayoutConstraint constraintWithItem:self.basketView
+                                 attribute:NSLayoutAttributeBottom
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.view
+                                 attribute:NSLayoutAttributeBottom
+                                multiplier:1
+                                  constant:-20].active = YES;
  
-
-    [self.view addSubview:basket];
-
-    UIImageView *apple = [[UIImageView alloc] initWithFrame:CGRectMake(230, 460, 60, 60)];
-    apple.image = [UIImage imageNamed:@"apple.png"];
+ 
     
-    [self.view addSubview:apple];
+    
+    
 
+
+    
+    
+    
+    
+    
 //Adding pinch for apple
     
     
     UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]initWithTarget:self action:@selector(pin:)];
   
-    [apple addGestureRecognizer:pinch];
+    [self.view addGestureRecognizer:pinch];
 
+//    [self.appleView setUserInteractionEnabled:YES];
 }
 
 
@@ -109,27 +194,59 @@
     
 }
 
-//Pinching apple method
+//Pinching apple method 
 
 -(void) pin : (UIPinchGestureRecognizer*) sender {
-    UIImageView *appleCopyView = [[UIImageView alloc] initWithFrame:CGRectMake(230, 460, 60, 60)];
-    CGPoint location = [sender locationInView:sender.view];
+  
     
+    CGPoint location = [sender locationInView:sender.view];
+  
     
     switch (sender.state) {
         case UIGestureRecognizerStateBegan:
-          
+            if(CGRectContainsPoint(_basketView.frame, location)){
+                _appleView.center = location;
+                self.basketClick = TRUE;
+            }
+            
+            
             break;
             
         case UIGestureRecognizerStateChanged:
-            appleCopyView.center = location;
+            if (self.basketClick ==TRUE){
+                _appleView.center = location;
+            }
             break;
     
         case UIGestureRecognizerStateEnded:
+            if (CGRectContainsPoint(_petImageView.frame, _appleView.center)) {
+                self.petImageView.image = [UIImage imageNamed:@"sleeping.png"];
+                [UIView animateWithDuration:2 animations:^{
+                    _appleView.alpha = 0;
+                    
+                    
+                    _appleView.center = self.basketView.center;
+                    _appleView.alpha =1;
+                    
+                }];
+                
+
+            }
+            else{
+                [UIView animateWithDuration:2 animations:^{
+                    _appleView.center = CGPointMake(_appleView.center.x, self.view.frame.size.height - self.appleView.frame.size.height/2);
+                }];
+                
+            }
+            break;
+        default:
             break;
     }
     
+
     }
+
+
     
 
 

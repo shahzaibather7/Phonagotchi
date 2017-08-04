@@ -8,6 +8,12 @@
 
 #import "Phonagotchi.h"
 
+@interface Phonagotchi()
+
+@property (nonatomic ,readonly) BOOL isGrumpy;
+
+@end
+
 @implementation Phonagotchi
 
 - (instancetype)init

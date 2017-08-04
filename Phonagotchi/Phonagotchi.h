@@ -10,6 +10,6 @@
 
 @interface Phonagotchi : NSObject
 
-@property (nonatomic ,readonly) BOOL isGrumpy;
+
 
 @end
